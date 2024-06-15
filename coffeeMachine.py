@@ -54,7 +54,7 @@ def enjoy():
    (   }     {   )
    |`-.._____..-'|
    |             ;--.
-   |            (__  \
+   |            (__  \\
    |             | )  )
    |             |/  /
    |             /  /    Enjoy!
@@ -67,46 +67,33 @@ def money():
     print("Please insert coins.")
     quarters = float(input("How many quarters?: "))
     dimes = float(input("How many dimes?: "))
-    nickles = float(input("How many nickles?: "))
+    nickels = float(input("How many nickels?: "))
     pennies = float(input("How many pennies?: "))
-    return (0.01*pennies + 0.1*dimes + 0.05*nickles + 0.25*quarters)
+    return (0.01*pennies + 0.1*dimes + 0.05*nickels + 0.25*quarters)
 
 def resource_check(coffee):
-    if (resources["coffee"] >= MENU[coffee["coffee"]] and resources["water"] >= MENU[coffee["water"]] and 
-        resources["milk"] >= MENU[coffee["milk"]] if coffee != "espresso" else True):
-        resources["coffee"] -= MENU[coffee["coffee"]]
-        resources["water"] -= MENU[coffee["water"]]
-        resources["milk"] -= MENU[coffee["milk"]] if coffee != "espresso" else True
-        return True
-    else:
-        print("Sorry there is not enough resources.")
-    return False
+    ingredients = MENU[coffee]["ingredients"]
+    for item in ingredients:
+        if resources[item] < ingredients[item]:
+            print(f"Sorry there is not enough {item}.")
+            return False
+    for item in ingredients:
+        resources[item] -= ingredients[item]
+    return True
 
-choice = input("What would you like? (espresso/latte/cappuccino): ")
 while True:
-    if choice == "espresso":
+    choice = input("What would you like? (espresso/latte/cappuccino/report/exit): ").lower()
+    if choice == "exit":
+        break
+    if choice in MENU:
         value = money()
-        if value >= MENU["espresso"["cost"]] and resource_check(choice):
-            value -= MENU["espresso"["cost"]]
-            print(f"Here is ${value} in change")
+        if value >= MENU[choice]["cost"] and resource_check(choice):
+            change = value - MENU[choice]["cost"]
+            print(f"Here is ${change:.2f} in change")
             enjoy()
-    elif choice == "latte":
-        value = money()
-        if value >= MENU["latte"["cost"]] and resource_check(choice):
-            value -= MENU["latte"["cost"]]
-            print(f"Here is ${value} in change")
-    elif choice == "cappuccino":
-        value = money()
-        if value >= MENU["cappuccino"["cost"]] and resource_check(choice):
-            value -= MENU["cappuccino"["cost"]]
-            print(f"Here is ${value} in change")
-            resource_check(choice)
-            enjoy()
+        else:
+            print("Sorry, that's not enough money. Money refunded.")
     elif choice == "report":
         print(resources)
     else:
         print("Invalid Input")
-
-
-
-
